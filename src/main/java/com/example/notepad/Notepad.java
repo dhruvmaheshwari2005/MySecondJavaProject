@@ -1,17 +1,20 @@
 package com.example.notepad;
 
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.*;
 import java.awt.event.*;
-import java.security.Key;
+import java.io.IOException;
 
 
 public class Notepad extends JFrame {
     JMenuBar menuBar;
     JMenu fileMenu, editMenu, viewMenu;
+    JPopupMenu popup;
+    JMenuBar statusBar;
+    int width, height;
 
+    JLabel charCountLabel, wordCountLabel;
 
 
     // File menu items
@@ -31,22 +34,30 @@ public class Notepad extends JFrame {
         // get the window width and height
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Rectangle rectangle = env.getMaximumWindowBounds();
-        int width = rectangle.width;
-        int height = rectangle.height;
+        width = rectangle.width;
+        height = rectangle.height;
 
         // set the UI skin
         try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel("com.apple.laf.AquaLookAndFeel");
         } catch (Exception exc) {
             System.out.println(exc);
         }
 
         menuBar = new JMenuBar();
+        statusBar = new JMenuBar();
+
+        // status bar label
+        charCountLabel = new JLabel();
+        wordCountLabel = new JLabel();
 
         // menu
         fileMenu = new JMenu("File");
         editMenu = new JMenu("Edit");
         viewMenu = new JMenu("View");
+
+        // popup menu
+        popup = new JPopupMenu();
 
         // add menus to menu bar
         menuBar.add(fileMenu);
@@ -85,6 +96,10 @@ public class Notepad extends JFrame {
         editMenu.add(replaceMenuItem);
         editMenu.add(gotoMenuItem);
 
+//        popup.add(cutMenuItem);
+//        popup.add(copyMenuItem);
+//        popup.add(pasteMenuItem);
+
         // view menu items
         zoomMenuItem = new JCheckBoxMenuItem("Zoom", false);
         wordWrapMenuItem = new JCheckBoxMenuItem("Word Wrap", false);
@@ -100,7 +115,6 @@ public class Notepad extends JFrame {
         mainTextArea = new JTextArea();
 
 
-
         // frame properties
         setLayout(null);
         setVisible(true);
@@ -113,6 +127,9 @@ public class Notepad extends JFrame {
         add(mainTextArea);
         menuBar.setBounds(0, 0, width, 30);
         mainTextArea.setBounds(0, 30, width, height - 30);
+        add(statusBar);
+        statusBar.add(wordCountLabel);
+        statusBar.add(charCountLabel);
 
         bindListeners();
     }
@@ -137,7 +154,6 @@ public class Notepad extends JFrame {
             public void mouseWheelMoved(MouseWheelEvent e) {
                 if (e.isControlDown()) {
                     Font font = mainTextArea.getFont();
-                    System.out.println(e.getWheelRotation());
                     if (e.getPreciseWheelRotation() < 0) {
                         mainTextArea.setFont(new Font(font.getFontName(), font.getStyle(), font.getSize() + 2));
                     } else {
@@ -147,12 +163,9 @@ public class Notepad extends JFrame {
             }
         });
 
-        mainTextArea.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                trackFileChanges(e);
-            }
-        });
+        System.out.println(Thread.currentThread().getName());
+        // creating a thread for tracking changes on main textarea
+        new Thread(new StatusBar(), "Status Bar Thread").start();
 
         wordWrapMenuItem.addActionListener(new ActionListener() {
             @Override
@@ -161,6 +174,54 @@ public class Notepad extends JFrame {
                 mainTextArea.setLineWrap(checkBoxMenuItem.getState());
             }
         });
+
+        mainTextArea.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == 3) {
+                    // right click
+                    mainTextArea.add(popup);
+                    popup.setVisible(true);
+                    popup.setLocation(e.getX(), e.getY() + popup.getHeight());
+                } else if (e.getButton() == 1) {
+                    popup.setVisible(false);
+                }
+            }
+        });
+
+        cutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String content = mainTextArea.getSelectedText();
+                mainTextArea.replaceSelection("");
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(new StringSelection(content), null);
+            }
+        });
+
+        copyMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        pasteMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+                if (transferable != null) {
+                    try {
+                        String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+                        mainTextArea.replaceSelection(content);
+                        System.out.println(content);
+                    } catch (UnsupportedFlavorException | IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+
     }
 
     public void openApplication() {
@@ -184,5 +245,24 @@ public class Notepad extends JFrame {
 
     public static void main(String[] args) {
         new Notepad().openApplication();
+    }
+
+    // nested class for showing data on the status bar
+    class StatusBar implements Runnable {
+        @Override
+        public void run() {
+            System.out.println(Thread.currentThread().getName());
+            mainTextArea.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    statusBar.setBounds(0, getHeight() - 60, width, 30);
+                    charCountLabel.setText("Char count: " + mainTextArea.getText().length());
+                }
+            });
+        }
+
+        public StatusBar() {
+
+        }
     }
 }
