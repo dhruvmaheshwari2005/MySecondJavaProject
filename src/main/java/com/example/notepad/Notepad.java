@@ -39,7 +39,7 @@ public class Notepad extends JFrame {
 
         // set the UI skin
         try {
-            UIManager.setLookAndFeel("com.apple.laf.AquaLookAndFeel");
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         } catch (Exception exc) {
             System.out.println(exc);
         }
