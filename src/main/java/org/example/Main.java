@@ -1,25 +1,25 @@
-package org.example;
-
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.FlowLayout;
-import javax.swing.BoxLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-
-public class Main extends JFrame {
-    JMenuBar topMenuBar, bottomMenuBar;
-    JTextArea mainTextArea;
-    public Main() {
-
-        LayoutManager2 m = new 
-
-        setSize(1000, 1000);
+//package org.example;
+//
+//
+//import javax.swing.*;
+//import java.awt.*;
+//import java.awt.FlowLayout;
+//import javax.swing.BoxLayout;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
+//
+//
+//public class Main extends JFrame {
+//    JMenuBar topMenuBar, bottomMenuBar;
+//    JTextArea mainTextArea;
+//    public Main() {
+//
+//        LayoutManager2 m = new
+//
+//        setSize(1000, 1000);
 //        setLayout(new BorderLayout());
-        setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setVisible(true);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //
 //        topMenuBar = new JMenuBar();
 //        JMenu fileMenu = new JMenu("File");
@@ -32,8 +32,8 @@ public class Main extends JFrame {
 //        add(topMenuBar, BorderLayout.NORTH);
 //        add(mainTextArea, BorderLayout.CENTER);
 //        add(bottomMenuBar, BorderLayout.SOUTH);
-
-        // Grid
+//
+//         Grid
 //        setLayout(new GridLayout(3, 3, 10, 10));
 //
 //        JButton[] buttons = new JButton[9];
@@ -41,7 +41,7 @@ public class Main extends JFrame {
 //            buttons[i] = new JButton("Button"+ (i + 1));
 //            add(buttons[i]);
 //        }
-
+//
 //        setLayout(new GridBagLayout());
 //
 //        GridBagConstraints gbc = new GridBagConstraints();
@@ -97,7 +97,7 @@ public class Main extends JFrame {
 //
 //        // Show the frame
 //        setVisible(true);
-
+//
 //        CardLayout cardLayout = new CardLayout();
 //        Container f = getContentPane();
 //        setLayout(cardLayout);
@@ -112,17 +112,17 @@ public class Main extends JFrame {
 //                }
 //            });
 //        }
-
-        setLayout(new FlowLayout(FlowLayout.TRAILING, 10, 10));
-        JButton[] buttons = new JButton[9];
-        for (int i = 0; i < 9; i++) {
-            buttons[i] = new JButton("Button"+ (i + 1));
-            add(buttons[i]);
-        }
-    }
-
-
-    public static void main(String[] args) {
-        new Main();
-    }
-}
+//
+//        setLayout(new FlowLayout(FlowLayout.TRAILING, 10, 10));
+//        JButton[] buttons = new JButton[9];
+//        for (int i = 0; i < 9; i++) {
+//            buttons[i] = new JButton("Button"+ (i + 1));
+//            add(buttons[i]);
+//        }
+//    }
+//
+//
+//    public static void main(String[] args) {
+//        new Main();
+//    }
+//}
